@@ -56,16 +56,15 @@ public class AuthentificateService {
             try {
                 request = new ObjectMapper().readValue(json, RequestJwt.class);
                 if(request.getUsername() == null || request.getUsername().isEmpty()){
-                    System.out.println(request.getUsername());
                     errors = ErrorTypes.NOUSERNAME.getTitle();
                 }
                 if(request.getPassword() == null || request.getPassword().isEmpty()){
                     errors = ErrorTypes.NOPASSWORD.getTitle();
-                }
-                BCryptPasswordEncoder encoder2 = new BCryptPasswordEncoder();
-                if(!request.getUsername().equals(dao.findFirstByUsername(request.getUsername()).getUsername()) /*|| !encoder2.matches(request.getPassword(), dao.findFirstByUsername(request.getUsername()).getPassword())*/){
-                    errors = ErrorTypes.NOUSERINDATABASE.getTitle();
                 } else {
+                        BCryptPasswordEncoder encoder2 = new BCryptPasswordEncoder();
+                        if(!request.getUsername().equals(dao.findFirstByUsername(request.getUsername()).getUsername()) || !encoder2.matches(request.getPassword(), dao.findFirstByUsername(request.getUsername()).getPassword())) {
+                            errors = ErrorTypes.NOUSERINDATABASE.getTitle();
+                        }
                     try {
                         Authentication authenticate = authenticationManager.authenticate(
                                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
